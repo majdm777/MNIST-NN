@@ -1,105 +1,298 @@
-# REQUIREMENT
+# MNIST Neural Network From Scratch
 
-### pip install numpy matplotlib tensorflow
+A handwritten digit recognition system built from scratch using **Python and NumPy**.
+This project implements a simple neural network without using deep learning frameworks like TensorFlow or PyTorch.
 
-# STRUCTURE 
+The model is trained on the **MNIST handwritten digits dataset** and can recognize handwritten digits drawn by the user through a custom GUI.
 
+---
 
+## Project Overview
 
-# mnist_nn/
-# │
-# ├── main.py
-# ├── layers.py
-# ├── activations.py
-# ├── loss.py
-# ├── network.py
-# └── utils.py
+The goal of this project is to understand the internal workings of neural networks by implementing the main components manually:
 
+* Forward propagation
+* Activation functions
+* Softmax classification
+* Cross-entropy loss
+* Backpropagation
+* Gradient descent optimization
+* Model saving/loading
+* Handwritten digit prediction
 
-
-
-
-# MNIST-NN
-A one- or two-sentence description of what the project does.
+---
 
 ## Features
 
-- Feature 1
-- Feature 2
-- Feature 3
+* ✅ Neural network implemented from scratch using NumPy
+* ✅ Dense (fully connected) layers
+* ✅ ReLU activation function
+* ✅ Softmax output layer
+* ✅ Cross-entropy loss
+* ✅ Backpropagation implementation
+* ✅ Gradient descent training
+* ✅ MNIST digit classification
+* ✅ Model weight saving/loading
+* ✅ Drawing interface for testing custom handwriting
 
-## Technologies Used
+---
 
-- Language/Framework 1
-- Language/Framework 2
-- Database
-- Other tools
+## Neural Network Architecture
 
-## Installation
+The implemented network:
 
-1. Clone the repository
-   ```bash
-   git clone <repository-url>
-   ```
-
-2. Navigate to the project
-   ```bash
-   cd project-name
-   ```
-
-3. Install dependencies (if needed)
-   ```bash
-   pip install numpy matplotlib tensorflow
-   ```
-
-## Usage
-
-Explain how to start the project.
-
-Example:
-```bash
-npm start
+```
+Input Image
+(784 pixels)
+      |
+      v
+Dense Layer
+784 → 128 neurons
+      |
+      v
+ReLU Activation
+      |
+      v
+Dense Layer
+128 → 10 neurons
+      |
+      v
+Softmax
+      |
+      v
+Digit Probabilities
+(0 - 9)
 ```
 
-or
+---
 
-- Start XAMPP.
-- Import the SQL database.
-- Open the project in your browser.
+## Dataset
+
+The project uses the **MNIST dataset**:
+
+* 70,000 grayscale images
+* Image size: 28 × 28 pixels
+* 60,000 training images
+* 10,000 testing images
+* 10 classes (digits 0-9)
+
+Each image is converted into:
+
+```
+28 × 28 = 784 input values
+```
+
+Pixel values are normalized:
+
+```
+Original:
+0 - 255
+
+After normalization:
+0 - 1
+```
+
+---
 
 ## Project Structure
 
 ```
 MNIST-NN/
 
-├── main.py          # train + save model
-├── predict.py       # load model + classify
-├── draw.py          # drawing interface
+│
+├── main.py                 # Train the neural network
+├── draw.py                 # GUI for handwritten digit prediction
+│
+├── network.py              # Neural network architecture
+├── layer.py                # Dense layer implementation
+├── activation.py           # ReLU and Softmax functions
+├── loss.py                 # Cross entropy loss
 │
 ├── model/
-│   ├── layer1_weights.npy
+│   ├── layer1_weights.npy  # Saved weights
 │   └── layer2_weights.npy
 │
-├── network.py
-├── layer.py
-├── activation.py
-└── loss.py
+└── README.md
 ```
 
-## Screenshots
+---
 
-Add screenshots or GIFs here.
+## Installation
+
+Clone the repository:
+
+```bash
+git clone <repository-url>
+```
+
+Create a virtual environment:
+
+```bash
+python -m venv .venv
+```
+
+Activate it:
+
+### Windows
+
+```bash
+.venv\Scripts\activate
+```
+
+Install dependencies:
+
+```bash
+pip install numpy matplotlib pillow scikit-learn
+```
+
+---
+
+## Training the Model
+
+Run:
+
+```bash
+python main.py
+```
+
+The training process:
+
+1. Loads MNIST dataset
+2. Normalizes images
+3. Creates the neural network
+4. Performs forward propagation
+5. Calculates loss
+6. Performs backpropagation
+7. Updates weights
+8. Saves trained weights
+
+After training, the model weights are stored in:
+
+```
+model/
+```
+
+---
+
+## Training Results
+
+Example training results:
+
+```
+Epoch: 1 Loss: 0.414
+Epoch: 2 Loss: 0.233
+Epoch: 3 Loss: 0.187
+Epoch: 4 Loss: 0.157
+Epoch: 5 Loss: 0.136
+```
+
+Testing accuracy:
+
+```
+Accuracy: ~95%
+```
+
+---
+
+## Testing Your Own Handwriting
+
+After training, run:
+
+```bash
+python draw.py
+```
+
+A drawing window will appear.
+
+Steps:
+
+1. Draw a digit using the mouse
+2. Press the **Predict** button
+3. The program:
+
+   * Crops empty space
+   * Resizes the digit
+   * Centers it
+   * Converts it to MNIST format
+   * Runs prediction
+
+Example:
+
+```
+Prediction: 7
+```
+
+---
+
+## How Backpropagation Works
+
+The network learns by calculating how much each weight contributes to the error.
+
+The process:
+
+```
+Prediction
+    |
+    v
+Loss Calculation
+    |
+    v
+Backward Propagation
+    |
+    v
+Gradient Calculation
+    |
+    v
+Weight Update
+```
+
+Weights are updated using:
+
+```
+new_weight =
+old_weight - learning_rate * gradient
+```
+
+---
+
+## Technologies Used
+
+* Python
+* NumPy
+* Matplotlib
+* Pillow
+* Tkinter
+* Scikit-learn
+
+---
+
+## Why This Project?
+
+This project was built to understand neural networks at a lower level instead of relying on existing frameworks.
+
+By implementing the main components manually, it provides a deeper understanding of:
+
+* How neurons work
+* How weights are updated
+* How errors propagate backward
+* How models learn from data
+
+---
 
 ## Future Improvements
 
-- Add feature X
-- Improve UI
-- Optimize performance
+Possible improvements:
 
-## Contributing
+* Mini-batch gradient descent
+* Better optimizers (Momentum, Adam)
+* More hidden layers
+* Dropout regularization
+* Convolutional Neural Network (CNN)
+* Data augmentation for handwritten input
+* Export model as a standalone application
 
-Contributions are welcome. Feel free to open an issue or submit a pull request.
+---
 
 ## License
 
-This project is licensed under the MIT License.
+This project is open-source and available for learning purposes.

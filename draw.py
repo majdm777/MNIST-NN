@@ -1,6 +1,7 @@
 import tkinter as tk
 import numpy as np
 import os
+import matplotlib.pyplot as plt
 from PIL import Image
 
 from network import Network
@@ -10,8 +11,8 @@ from network import Network
 # Load trained model
 # =========================
 
-layer1_path = "Model/layer1_weights.npy"
-layer2_path = "Model/layer2_weights.npy"
+layer1_path = "model/layer1_weights.npy"
+layer2_path = "model/layer2_weights.npy"
 
 
 if not os.path.exists(layer1_path) or not os.path.exists(layer2_path):
@@ -20,7 +21,7 @@ if not os.path.exists(layer1_path) or not os.path.exists(layer2_path):
     exit()
 
 
-network = Network() 
+network = Network()
 
 network.layer1.weights = np.load(layer1_path)
 network.layer2.weights = np.load(layer2_path)
@@ -34,13 +35,12 @@ print("Model loaded successfully!")
 
 canvas_size = 280
 
-# Store drawing as grayscale image
-# 0 = black, 255 = white
+# Store drawing
 image = np.zeros((canvas_size, canvas_size), dtype=np.uint8)
 
 
 # =========================
-# Drawing function
+# Drawing
 # =========================
 
 def paint(event):
@@ -50,7 +50,6 @@ def paint(event):
 
     radius = 10
 
-    # Draw on tkinter canvas
     canvas.create_oval(
         x-radius,
         y-radius,
@@ -60,7 +59,6 @@ def paint(event):
         outline="white"
     )
 
-    # Draw on numpy image
     x1 = max(0, x-radius)
     x2 = min(canvas_size, x+radius)
 
@@ -72,13 +70,73 @@ def paint(event):
 
 
 # =========================
-# Clear drawing
+# Clear canvas
 # =========================
 
 def clear():
 
     canvas.delete("all")
     image[:] = 0
+
+    result_label.config(
+        text="Prediction:"
+    )
+
+
+# =========================
+# Image preprocessing
+# =========================
+
+def crop_digit(img):
+
+    coords = np.argwhere(img > 0)
+
+    # Empty image
+    if len(coords) == 0:
+        return img
+
+
+    y_min, x_min = coords.min(axis=0)
+    y_max, x_max = coords.max(axis=0)
+
+
+    cropped = img[
+        y_min:y_max+1,
+        x_min:x_max+1
+    ]
+
+    return cropped
+
+
+
+def resize_digit(img):
+
+    img = Image.fromarray(img)
+
+    # Resize while keeping ratio
+    img.thumbnail((20,20))
+
+
+    # Create 28x28 black image
+    new_img = Image.new(
+        "L",
+        (28,28),
+        0
+    )
+
+
+    # Center digit
+    x = (28 - img.width)//2
+    y = (28 - img.height)//2
+
+
+    new_img.paste(
+        img,
+        (x,y)
+    )
+
+
+    return np.array(new_img)
 
 
 
@@ -88,26 +146,43 @@ def clear():
 
 def predict_digit():
 
-    # Convert numpy array to PIL image
-    img = Image.fromarray(image)
+    img = image.copy()
 
-    # Resize 280x280 -> 28x28
-    img = img.resize((28, 28))
 
-    # Convert back to numpy
-    img = np.array(img)
+    # Remove empty borders
+    img = crop_digit(img)
+
+
+    # Resize and center
+    img = resize_digit(img)
+
+
+    # Show what the AI sees
+    plt.imshow(
+        img,
+        cmap="gray"
+    )
+
+    plt.title("Processed MNIST Image")
+
+    plt.show()
+
 
     # Normalize
     img = img / 255.0
 
-    # Flatten 28x28 -> 784
+
+    # Flatten
     img = img.reshape(784)
 
+
     prediction = network.predict(img)
+
 
     result_label.config(
         text=f"Prediction: {prediction}"
     )
+
 
     print("Prediction:", prediction)
 
@@ -119,7 +194,9 @@ def predict_digit():
 
 root = tk.Tk()
 
-root.title("MNIST Digit Recognizer")
+root.title(
+    "MNIST Digit Recognizer"
+)
 
 
 canvas = tk.Canvas(
@@ -138,6 +215,7 @@ canvas.bind(
 )
 
 
+
 predict_button = tk.Button(
     root,
     text="Predict",
@@ -145,6 +223,7 @@ predict_button = tk.Button(
 )
 
 predict_button.pack()
+
 
 
 clear_button = tk.Button(
@@ -156,13 +235,15 @@ clear_button = tk.Button(
 clear_button.pack()
 
 
+
 result_label = tk.Label(
     root,
-    text="Prediction: ",
-    font=("Arial", 16)
+    text="Prediction:",
+    font=("Arial",16)
 )
 
 result_label.pack()
+
 
 
 root.mainloop()

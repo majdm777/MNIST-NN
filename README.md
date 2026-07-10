@@ -142,7 +142,7 @@ Activate it:
 Install dependencies:
 
 ```bash
-pip install numpy matplotlib pillow scikit-learn
+pip install numpy matplotlib pillow scikit-learn pandas
 ```
 
 ---
